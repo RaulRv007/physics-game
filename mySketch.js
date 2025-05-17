@@ -56,11 +56,8 @@ function draw() {
 		case gameState.ON_GAME:
 			//my start
 			if (!ground) {
-				ground = new Ground(WIDTH / 2, HEIGHT - 100, WIDTH, 20, 0);
-				boundaries.push(new Ground(0, HEIGHT / 2, 20, HEIGHT, 0));
-				boundaries.push(new Ground(WIDTH, HEIGHT / 2, 20, HEIGHT, 0));
-				boundaries.push(new Ground(WIDTH / 2, 0, WIDTH, 20, 0));
-				boundaries.push(new Ground(WIDTH / 2, HEIGHT, WIDTH, 20, 0));
+				ground = new Ground(WIDTH / 2, HEIGHT + 150 , WIDTH*200, 300, 0);
+
 				piece = new Piece(200, 200, 10, 5);
 
 				for (let i = 0; i < numPlayers; i++) {
@@ -83,12 +80,22 @@ function draw() {
 			}
 			Engine.update(engine);
 
-			for (let i = 0; i < boundaries.length; i++) {
-				boundaries[i].show();
-			}
+			//Show
+			let offsetX = width / 2 - players[0].body.position.x -300;
+  			let offsetY = (height / 2 - players[0].body.position.y)/4;
+			push();
+			translate(offsetX, offsetY);
+			piece.show();
 			ground.show();
 			for (let i = 0; i < players.length; i++) {
 				players[i].show();
+			}
+
+			pop();
+			//show ending
+
+
+			for (let i = 0; i < players.length; i++) {
 				players[i].handleControls();
 				if (dist(players[i].body.position.x, players[i].body.position.y, piece.body.position.x, piece.body.position.y) < 50 && keyIsDown(32)) {
 					piece.addConstraint(players[players.length - 1].body);
@@ -96,7 +103,19 @@ function draw() {
 				}
 
 			}
-			piece.show();
+
+			if(piece.hasRope){
+				if(keyIsDown(32)){
+					Matter.Body.applyForce(piece.body, piece.body.position, {
+						x: 0,
+						y: -0.005,
+					});
+				}
+				if(keyIsDown(27)){
+					Matter.world.remove(world, constraints[constraints.length - 1]);
+					piece.hasRope = false;
+				}
+			}
 	}
 	
 
