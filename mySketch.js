@@ -8,9 +8,8 @@ let Engine = Matter.Engine,
 
 let engine;
 let world;
-
-let boxes;
 let runner;
+
 let ground;
 let numPlayers = 4;
 let players = [];
@@ -28,15 +27,17 @@ let gameState = {
 }
 let actualState = gameState.MAIN_MENU;
 
+let piece
+
 function setup() {
 	// Set the canvas size
-	WIDTH = windowWidth;
-	HEIGHT = windowHeight;
+	WIDTH = windowWidth - 50;
+	HEIGHT = windowHeight - 50;
 	createCanvas(WIDTH, HEIGHT);
 	engine = Engine.create();
 	world = engine.world;
 
-	boxes = [];
+
 
 }
 
@@ -60,9 +61,10 @@ function draw() {
 				boundaries.push(new Ground(WIDTH, HEIGHT / 2, 20, HEIGHT, 0));
 				boundaries.push(new Ground(WIDTH / 2, 0, WIDTH, 20, 0));
 				boundaries.push(new Ground(WIDTH / 2, HEIGHT, WIDTH, 20, 0));
+				piece = new Piece(200, 200, 10, 5);
 
 				for (let i = 0; i < numPlayers; i++) {
-					let player = new Player(200 + i * 60, 200, 20, 5, null);
+					let player = new Player(200 + i * 60, 200, 20, 20, 5, null, i);
 					players.push(player);
 
 					if (i > 0) {
@@ -71,7 +73,7 @@ function draw() {
 							bodyA: players[i - 1].body,
 							bodyB: players[i].body,
 							length: 80,
-							stiffness: 0.001,
+							stiffness: 0.002,
 							damping: 0.001
 						});
 						constraints.push(constraint);
@@ -81,19 +83,20 @@ function draw() {
 			}
 			Engine.update(engine);
 
-			for (let i = 0; i < boxes.length; i++) {
-				boxes[i].show();
-			}
 			for (let i = 0; i < boundaries.length; i++) {
 				boundaries[i].show();
 			}
 			ground.show();
 			for (let i = 0; i < players.length; i++) {
 				players[i].show();
+				players[i].handleControls();
+				if (dist(players[i].body.position.x, players[i].body.position.y, piece.body.position.x, piece.body.position.y) < 50 && keyIsDown(32)) {
+					piece.addConstraint(players[players.length - 1].body);
+					piece.hasRope = true;
+				}
+
 			}
-
-			
-
+			piece.show();
 	}
 	
 
@@ -176,21 +179,21 @@ function keyPressed() {
 		//bnm
 		case 78:
 			// Move up
-			Matter.Body.applyForce(players[2].body, players[2].body.position, {
+			Matter.Body.applyForce(players[3].body, players[3].body.position, {
 				x: 0,
 				y: -0.05,
 			});
 			break;
 		case 66:
 			// Move left
-			Matter.Body.applyForce(players[2].body, players[2].body.position, {
+			Matter.Body.applyForce(players[3].body, players[3].body.position, {
 				x: -0.05,
 				y: 0,
 			});
 			break;
 		case 77:
 			// Move right
-			Matter.Body.applyForce(players[2].body, players[2].body.position, {
+			Matter.Body.applyForce(players[3].body, players[3].body.position, {
 				x: 0.05,
 				y: 0,
 			});
