@@ -11,7 +11,7 @@ let world;
 let runner;
 
 let ground;
-let numPlayers = 4;
+let numPlayers = 2;
 let players = [];
 
 let boundaries = [];
@@ -28,6 +28,7 @@ let gameState = {
 let actualState = gameState.MAIN_MENU;
 
 let piece
+let mapGen;
 
 function setup() {
 	// Set the canvas size
@@ -55,24 +56,30 @@ function draw() {
 			break;
 		case gameState.ON_GAME:
 			//my start
-			if (!ground) {
-				ground = new Ground(WIDTH / 2, HEIGHT + 150 , WIDTH*200, 300, 0);
+			if (!mapGen) {
+				mapGen = new MapGenerator(world, ['flat', 'stairs-up', 'stairs-down', 'pit-platforms', 'flat', 'end'], 0, HEIGHT - 100, 1000);
+				mapGen.generate();
+				//ground = new Ground(WIDTH / 2, HEIGHT + 150 , WIDTH*200, 300, 0);
 
 				piece = new Piece(200, 200, 10, 5);
+				/*
+				chunk = new Chunk(WIDTH/2, HEIGHT, '');
+				chunk.generate();*/
 
 				for (let i = 0; i < numPlayers; i++) {
-					let player = new Player(200 + i * 60, 200, 20, 20, 5, null, i);
+					let player = new Player(200 + i * 60, 200, 20, 20, 5, null, i, -0.003);
 					players.push(player);
 
 					if (i > 0) {
 						player.body_ant = players[i - 1].body;
 						let constraint = Constraint.create({
-							bodyA: players[i - 1].body,
-							bodyB: players[i].body,
-							length: 80,
-							stiffness: 0.002,
-							damping: 0.001
+						bodyA: players[i - 1].body,
+						bodyB: players[i].body,
+						length: 60,         
+						stiffness: 0.002,   
+						damping: 0.001      
 						});
+
 						constraints.push(constraint);
 						World.add(world, constraint);
 					}
@@ -82,11 +89,25 @@ function draw() {
 
 			//Show
 			let offsetX = width / 2 - players[0].body.position.x -300;
-  			let offsetY = (height / 2 - players[0].body.position.y)/4;
+  			let offsetY = (height / 2 - players[0].body.position.y)/2;
 			push();
 			translate(offsetX, offsetY);
 			piece.show();
-			ground.show();
+			//ground.show();
+			for (let chunk of mapGen.chunks) {
+				for (let body of chunk.bodies) {
+				if (body.circleRadius) {
+					ellipse(body.position.x, body.position.y, body.circleRadius * 2);
+				} else {
+					const vertices = body.vertices;
+					beginShape();
+					for (let v of vertices) {
+					vertex(v.x, v.y);
+					}
+					endShape(CLOSE);
+				}
+				}
+			}
 			for (let i = 0; i < players.length; i++) {
 				players[i].show();
 			}
@@ -101,15 +122,32 @@ function draw() {
 					piece.addConstraint(players[players.length - 1].body);
 					piece.hasRope = true;
 				}
+				if(players[i].body.position.y > HEIGHT + 500){
+					actualState = gameState.MAIN_MENU;
+					for (let j = 0; j < players.length; j++) {
+						Matter.World.remove(world, players[j].body);
+						if (j > 0) {
+							Matter.World.remove(world, constraints[constraints.length - 1]);
+							constraints.pop();
+						}
+					}
+					players = [];
+					constraints = [];
+					mapGen = null;
+				}
 
 			}
 
 			if(piece.hasRope){
-				if(keyIsDown(32)){
+				if (keyIsDown(32) && !piece.ropeForceApplied) {
 					Matter.Body.applyForce(piece.body, piece.body.position, {
 						x: 0,
-						y: -0.005,
+						y: -0.01,
 					});
+					piece.ropeForceApplied = true;
+				}
+				if (!keyIsDown(32)) {
+					piece.ropeForceApplied = false;
 				}
 				if(keyIsDown(27)){
 					Matter.world.remove(world, constraints[constraints.length - 1]);

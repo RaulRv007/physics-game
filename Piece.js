@@ -4,7 +4,8 @@ class Piece{
             restitution: 0.5,
             friction: 0,
             density: 0.005,
-            mass: 1,
+            mass: 0.3,
+
         }
         this.body = Bodies.circle(x, y, r, this.options);
         World.add(world, this.body);
@@ -30,11 +31,11 @@ class Piece{
         }
         this.addConstraint = function(body) {
             let constraint = Constraint.create({
-                bodyA: body,    
-                bodyB: this.body,
-                length: 80,
-                stiffness: 0.002,
-                damping: 0.001
+            bodyA: body,
+            bodyB: this.body,
+            length: 40,
+            stiffness: 0.002, // Lower stiffness for more flexibility
+            damping: 0.001  // Lower damping for less resistance
             });
             World.add(world, constraint);
         }

@@ -1,14 +1,16 @@
 class Player{
-    constructor(x, y, w, h, angle, points, body_ant, id){
+    constructor(x, y, w, h, angle, points, body_ant, id, jump){
         this.angle = angle;
         this.points = points;
         var options = {
             isStatic: false,
-            restitution: 0.5,
-            friction: 0.5,
+            restitution: 0,
+            friction: 1,
             angle: this.angle,
-            density: 0.005
+            density: 0.005,
+            mass: 1.5,
         }
+        this.jump = jump;
 
         this.w = w;
         this.h = h;
@@ -62,7 +64,7 @@ class Player{
         }
         this.handleControlsPlayer1 = function() {
             if (keyIsDown(87)) {
-                Matter.Body.applyForce(this.body, this.body.position, {x: 0, y: -0.05});
+                Matter.Body.applyForce(this.body, this.body.position, {x: 0, y: this.jump});
             }
             if (keyIsDown(81)) {
                 Matter.Body.applyForce(this.body, this.body.position, {x: -0.05, y: 0});
@@ -73,7 +75,7 @@ class Player{
         }
         this.handleControlsPlayer2 = function() {
             if (keyIsDown(88)) {
-                Matter.Body.applyForce(this.body, this.body.position, {x: 0, y: -0.05});
+                Matter.Body.applyForce(this.body, this.body.position, {x: 0, y: this.jump});
             }
             if (keyIsDown(90)) {
                 Matter.Body.applyForce(this.body, this.body.position, {x: -0.05, y: 0});
@@ -84,7 +86,7 @@ class Player{
         }
         this.handleControlsPlayer3 = function() {
             if (keyIsDown(79)) {
-                Matter.Body.applyForce(this.body, this.body.position, {x: 0, y: -0.05});
+                Matter.Body.applyForce(this.body, this.body.position, {x: 0, y: this.jump});
             }
             if (keyIsDown(73)) {
                 Matter.Body.applyForce(this.body, this.body.position, {x: -0.05, y: 0});
@@ -95,7 +97,7 @@ class Player{
         }
         this.handleControlsPlayer4 = function() {
             if (keyIsDown(78)) {
-                Matter.Body.applyForce(this.body, this.body.position, {x: 0, y: -0.05});
+                Matter.Body.applyForce(this.body, this.body.position, {x: 0, y: this.jump});
             }
             if (keyIsDown(66)) {
                 Matter.Body.applyForce(this.body, this.body.position, {x: -0.05, y: 0});
