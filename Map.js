@@ -10,9 +10,21 @@ class MapGenerator {
 
   generate() {
     let currentX = this.startX;
+    for (let i = 0; i < this.chunkSequence.length; i++) {
+      let chunk =  new Chunk(this.chunkSequence[i], currentX, this.startY, this.chunkWidth, false);
+      if(i <= this.chunkSequence.length - 2){
+        if(this.chunkSequence[i+1] == 'stairs-down'){
+          print('enters here')
+          chunk = new Chunk(this.chunkSequence[i], currentX, this.startY, this.chunkWidth, true);
+          print(chunk.isStairs)
+          
+        }else{
+          print('enters here false')
+          chunk = new Chunk(this.chunkSequence[i], currentX, this.startY, this.chunkWidth, false);
 
-    for (let type of this.chunkSequence) {
-      const chunk = new Chunk(type, currentX, this.startY, this.chunkWidth);
+        }
+      }
+
       chunk.addToWorld(this.world);
       this.chunks.push(chunk);
       currentX += this.chunkWidth;

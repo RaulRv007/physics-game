@@ -1,9 +1,10 @@
 class Chunk {
-    constructor(type, x, y, chunkWidth) {
+    constructor(type, x, y, chunkWidth, isStairs) {
         this.type = type;
         this.x = x;
         this.y = y;
         this.chunkWidth = chunkWidth;
+        this.isStairs = isStairs;
         this.bodies = this.#createBodies();
     }
 
@@ -13,16 +14,9 @@ class Chunk {
                 return [Matter.Bodies.rectangle(this.x + this.chunkWidth / 2, this.y, this.chunkWidth, 40, { isStatic: true })];
             case 'gap':
                 return [];
-            case 'platform':
-                return [
-                    Matter.Bodies.rectangle(this.x + this.chunkWidth * 0.3, this.y - 50, 100, 20, { isStatic: true }),
-                    Matter.Bodies.rectangle(this.x + this.chunkWidth * 0.7, this.y, 100, 20, { isStatic: true })
-                ];
             case 'climb':
-                return [
-                    Matter.Bodies.rectangle(this.x + this.chunkWidth * 0.3, this.y, 40, 100, { isStatic: true }),
-                    Matter.Bodies.rectangle(this.x + this.chunkWidth * 0.7, this.y - 100, 40, 100, { isStatic: true })
-                ];
+                print('climb')
+                return this.#createClimbing()
             case 'stairs-up':
                 return this.#createStairChunk(true);
             case 'stairs-down':
@@ -36,8 +30,7 @@ class Chunk {
                     Matter.Bodies.rectangle(this.x + this.chunkWidth / 2, this.y, this.chunkWidth, 40, { isStatic: true }),
                     Matter.Bodies.circle(this.x + this.chunkWidth / 2, this.y - 50, 20, {
                         isStatic: true,
-                        label: 'artifact',
-                        render: { fillStyle: 'gold' }
+                        label: 'artifact'
                     })
                 ];
             default:
@@ -54,6 +47,40 @@ class Chunk {
         for (let i = 0; i < steps; i++) {
             const stepX = this.x + i * stepWidth + stepWidth / 2;
             const stepY = this.y - (up ? i : steps - i - 1) * stepHeight;
+            bodies.push(Matter.Bodies.rectangle(stepX, stepY, stepWidth, 20, { isStatic: true }));
+        }
+
+        return bodies;
+    }
+    #createClimbing(){
+        const steps = 10;
+        const stepWidth = this.chunkWidth / steps;
+        const stepHeight = 30;
+        const bodies = [];
+
+        let stepY = this.y
+        for (let i = 0; i < steps; i++) {
+
+            const stepX = this.x + i * stepWidth + stepWidth / 2;
+            if(i == 0){
+                stepY = this.y
+            }
+            print(`isStairs: ${this.isStairs}`)
+            
+            if(this.isStairs){
+                print('enters')
+                if(i > steps - 6){
+                    stepY = stepY - stepHeight - (stepHeight/2)
+                }else{
+                    stepY = this.y * (random(noise(50))/2) + HEIGHT/2.5 + 200
+                    print(stepY)
+                }
+            }else{
+                stepY = this.y * (random(noise(50))/2) + HEIGHT/2.5 + 200
+                print(stepY)
+                
+            }
+            print(stepY)
             bodies.push(Matter.Bodies.rectangle(stepX, stepY, stepWidth, 20, { isStatic: true }));
         }
 

@@ -57,7 +57,7 @@ function draw() {
 		case gameState.ON_GAME:
 			//my start
 			if (!mapGen) {
-				mapGen = new MapGenerator(world, ['flat', 'stairs-up', 'stairs-down', 'pit-platforms', 'flat', 'end'], 0, HEIGHT - 100, 1000);
+				mapGen = new MapGenerator(world, ['flat', 'climb', 'stairs-down', 'pit-platforms', 'flat', 'end'], 0, HEIGHT - 100, 1000);
 				mapGen.generate();
 				//ground = new Ground(WIDTH / 2, HEIGHT + 150 , WIDTH*200, 300, 0);
 
