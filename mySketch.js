@@ -24,11 +24,18 @@ let dungeon;
 let gameState = {
 	MAIN_MENU : 0,
 	ON_GAME: 1,
+	WINNING: 2,
+	PAUSE: 3,
+
 }
 let actualState = gameState.MAIN_MENU;
 
 let piece
 let mapGen;
+
+let chunkNum = 1
+
+let hasWon = false
 
 function setup() {
 	// Set the canvas size
@@ -37,13 +44,23 @@ function setup() {
 	createCanvas(WIDTH, HEIGHT);
 	engine = Engine.create();
 	world = engine.world;
-
-
-
 }
 
+function chunkSquence(numChunks){
+	let chunkChain = ['flat']
+	for(let i = 0; i<= chunkNum; i++){
+		if(chunkChain[chunkChain.length - 1] == 'flat' || chunkChain[chunkChain.length - 1] == 'stairs-up', chunkChain[chunkChain.length - 1] == 'pit-`platfoms' ){
+			chunkChain.push(random(['climb', 'stairs-down', 'pit-platforms', 'swing']))
+		}
+		chunkChain.push(random(['climb', 'stairs-up', 'pit-platforms', 'swing']))
+
+	}
+	chunkChain.push('end')
+	return chunkChain
+}
 
 function draw() {
+	print(actualState)
 	background(50);
 	switch (actualState) {
 		case gameState.MAIN_MENU:
@@ -57,7 +74,8 @@ function draw() {
 		case gameState.ON_GAME:
 			//my start
 			if (!mapGen) {
-				mapGen = new MapGenerator(world, ['flat', 'climb', 'stairs-down', 'pit-platforms', 'flat', 'end'], 0, HEIGHT - 100, 1000);
+
+				mapGen = new MapGenerator(world, chunkSquence(chunkNum), 0, HEIGHT - 100, 1000);
 				mapGen.generate();
 				//ground = new Ground(WIDTH / 2, HEIGHT + 150 , WIDTH*200, 300, 0);
 
@@ -95,6 +113,9 @@ function draw() {
 			piece.show();
 			//ground.show();
 			for (let chunk of mapGen.chunks) {
+								fill(255, 0, 0);
+				rect(chunk.endX[0], chunk.endY[0], chunk.endX[1] - chunk.endX[0], chunk.endY[1] - chunk.endY[0]);
+				fill(0, 255, 0);
 				for (let body of chunk.bodies) {
 				if (body.circleRadius) {
 					ellipse(body.position.x, body.position.y, body.circleRadius * 2);
@@ -128,6 +149,8 @@ function draw() {
 						Matter.World.remove(world, players[j].body);
 						if (j > 0) {
 							Matter.World.remove(world, constraints[constraints.length - 1]);
+							Matter.World.clear(world, false);
+							Matter.Engine.clear(engine);
 							constraints.pop();
 						}
 					}
@@ -154,7 +177,23 @@ function draw() {
 					piece.hasRope = false;
 				}
 			}
+			for(let i = 0; i < mapGen.chunks.length; i++){
+				let chunk = mapGen.chunks[i];
+
+				if(piece.body.position.x >= chunk.endX[0] && piece.body.position.x <= chunk.endX[1]&& piece.body.position.y >= chunk.endY[0] && piece.body.position.y <= chunk.endY[1]){
+					hasWon = true;
+					actualState = gameState.WINNING;
+				}
+			}
+			break
+
+		case gameState.WINNING:
+			text('you won', WIDTH / 2 - 100, HEIGHT / 2);
+			if (keyIsDown(ENTER)) {
+				actualState = gameState.ON_GAME;
+			}
 	}
+
 	
 
 }

@@ -1,11 +1,18 @@
 class Chunk {
-    constructor(type, x, y, chunkWidth, isStairs) {
+    constructor(type, x, y, chunkWidth, isStairs, hasObstacles) {
         this.type = type;
         this.x = x;
         this.y = y;
         this.chunkWidth = chunkWidth;
         this.isStairs = isStairs;
         this.bodies = this.#createBodies();
+        if(this.type == 'end'){
+            this.endX = [x + chunkWidth/3, x + 4*chunkWidth/3]
+            this.endY = [y - 100, y + 150]
+        }else{
+            this.endX = [0, 0]
+            this.endY = [0, 0]
+        }
     }
 
     #createBodies() {
@@ -32,6 +39,7 @@ class Chunk {
                         isStatic: true,
                         label: 'artifact'
                     })
+                    
                 ];
             default:
                 return [];
@@ -57,31 +65,37 @@ class Chunk {
         const stepWidth = this.chunkWidth / steps;
         const stepHeight = 30;
         const bodies = [];
+        let random_number = floor(random(0, 5))
 
         let stepY = this.y
+        let stepY_ant = this.y
         for (let i = 0; i < steps; i++) {
 
             const stepX = this.x + i * stepWidth + stepWidth / 2;
             if(i == 0){
                 stepY = this.y
             }
-            print(`isStairs: ${this.isStairs}`)
+
             
             if(this.isStairs){
-                print('enters')
+
                 if(i > steps - 6){
                     stepY = stepY - stepHeight - (stepHeight/2)
                 }else{
                     stepY = this.y * (random(noise(50))/2) + HEIGHT/2.5 + 200
-                    print(stepY)
+
                 }
             }else{
                 stepY = this.y * (random(noise(50))/2) + HEIGHT/2.5 + 200
-                print(stepY)
+
+                if(abs(stepY - stepY_ant) >= 30){
+                    this.y * (random(noise(50))/4) + HEIGHT/2.5 + 200
+                }
                 
             }
-            print(stepY)
+
             bodies.push(Matter.Bodies.rectangle(stepX, stepY, stepWidth, 20, { isStatic: true }));
+            stepY_ant = stepY
         }
 
         return bodies;

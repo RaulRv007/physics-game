@@ -14,12 +14,12 @@ class MapGenerator {
       let chunk =  new Chunk(this.chunkSequence[i], currentX, this.startY, this.chunkWidth, false);
       if(i <= this.chunkSequence.length - 2){
         if(this.chunkSequence[i+1] == 'stairs-down'){
-          print('enters here')
+
           chunk = new Chunk(this.chunkSequence[i], currentX, this.startY, this.chunkWidth, true);
-          print(chunk.isStairs)
+
           
         }else{
-          print('enters here false')
+
           chunk = new Chunk(this.chunkSequence[i], currentX, this.startY, this.chunkWidth, false);
 
         }
@@ -34,4 +34,5 @@ class MapGenerator {
     endChunk.addToWorld(this.world);
     this.chunks.push(endChunk);
   }
+  
 }
