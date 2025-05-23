@@ -43,6 +43,11 @@ let city
 let platfoms = []
 let player_graphics = []
 let coin
+let endzone
+
+let font
+
+let timer
 
 function setup() {
 	// Set the canvas size
@@ -52,6 +57,9 @@ function setup() {
 	engine = Engine.create();
 	world = engine.world;
 	textAlign(CENTER, CENTER)
+	textSize(32);
+	textFont(font)
+	timer = new DigitalTimer(WIDTH / 2, HEIGHT / 2 -100);
 }
 
 function chunkSquence(numChunks){
@@ -79,6 +87,8 @@ function preload(){
 	player_graphics.push(loadImage('assets/player3.png'))
 	player_graphics.push(loadImage('assets/player4.png'))
 	coin = loadImage('assets/coin.png')
+	font = loadFont('assets/neon.ttf')
+	endzone = loadImage('assets/endzone.png')
 }
 
 function draw() {
@@ -87,26 +97,28 @@ function draw() {
 	background('#262a31');
 	switch (actualState) {
 		case gameState.MAIN_MENU:
+
 			city.resize(WIDTH, HEIGHT);
 			image(city, 0, 0);
-			let start_button = new Button('START', WIDTH / 2 - 100, HEIGHT / 2 - 100, 200, 100);
+			
 			const playerButtons = [
-				{ label: '1 Player', x: WIDTH / 2 - 100, y: HEIGHT / 2 + 100 },
+				{ label: '1 Player', x: WIDTH / 2 - 250, y: HEIGHT / 2 + 100 },
 				{ label: '2 Player', x: WIDTH / 2 + 100, y: HEIGHT / 2 + 100 },
-				{ label: '3 Player', x: WIDTH / 2 - 100, y: HEIGHT / 2 + 200 },
+				{ label: '3 Player', x: WIDTH / 2 - 250, y: HEIGHT / 2 + 200 },
 				{ label: '4 Player', x: WIDTH / 2 + 100, y: HEIGHT / 2 + 200 }
 			];
-
+			
 			playerButtons.forEach(btn => {
-				let button = new Button(btn.label, btn.x, btn.y, 200, 100);
+				let button = new Button(btn.label, btn.x, btn.y, 200, 100, platfoms[0]);
 				button.draw();
 				if (button.isPressed() && mouseIsPressed) {
 					numPlayers = parseInt(btn.label.split(' ')[0]);
 					actualState = gameState.ON_GAME;
 				}
 			});
-
-			start_button.draw();
+			
+			text('Select the number of players to start', WIDTH / 2, HEIGHT / 2 - 200);
+			
 			break;
 		case gameState.ON_GAME:
 			//my start
@@ -195,6 +207,10 @@ function draw() {
 				sliders[i].value = players[i].stamina;
 				sliders[i].show();
 			}
+			timer.display()
+			if(timer.isFinished()){
+				actualState = gameState.MAIN_MENU;
+			}
 
 			for(let i = 0; i < mapGen.chunks.length; i++){
 				let chunk = mapGen.chunks[i];
@@ -249,8 +265,10 @@ function draw() {
 			break
 
 		case gameState.WINNING:
+			city.resize(WIDTH, HEIGHT);
+			image(city, 0, 0);
 			text('you won', WIDTH / 2 - 100, HEIGHT / 2);
-			go_main = new Button('GO BACK', 100, 100, 200, 100)
+			go_main = new Button('GO BACK', 100, 100, 200, 100, platfoms[0]);
 			go_main.draw()
 			if (go_main.isPressed() && mouseIsPressed) {
 				actualState = gameState.MAIN_MENU;

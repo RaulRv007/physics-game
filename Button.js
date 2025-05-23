@@ -1,15 +1,19 @@
 class Button{
-    constructor(text, x, y, w, h) {
+    constructor(text, x, y, w, h, sprite) {
         this.text = text
         this.x = x
         this.y = y
         this.w = w
         this.h = h
+        this.sprite = sprite
     }
     draw(){
         fill('white')
         rect(this.x, this.y, this.w, this.h)
-        fill('black')
+        if(this.sprite){
+            image(this.sprite, this.x, this.y, this.w, this.h)
+        }
+        fill('white')
         text(this.text, this.x + this.w/2, this.y + this.h/2)
     }
     isPressed(){

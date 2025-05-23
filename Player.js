@@ -68,7 +68,7 @@ class Player{
 
         }
         this.handleControlsPlayer1 = function() {
-            if(this.stamina >= 0){
+            if(this.stamina >= 20){
                 if (keyIsDown(87)) {
                     Matter.Body.applyForce(this.body, this.body.position, {x: 0, y: this.jump});
                     this.removeStamina()
@@ -84,7 +84,7 @@ class Player{
             }
         }
         this.handleControlsPlayer2 = function() {
-            if(this.stamina >= 0){
+            if(this.stamina >= 20){
 
                 if (keyIsDown(88)) {
                     Matter.Body.applyForce(this.body, this.body.position, {x: 0, y: this.jump});
@@ -101,7 +101,7 @@ class Player{
             }
         }
         this.handleControlsPlayer3 = function() {
-            if(this.stamina >= 0){
+            if(this.stamina >= 20){
 
                 if (keyIsDown(79)) {
                     Matter.Body.applyForce(this.body, this.body.position, {x: 0, y: this.jump});
@@ -118,7 +118,7 @@ class Player{
             }
         }
         this.handleControlsPlayer4 = function() {
-            if(this.stamina >= 0){
+            if(this.stamina >= 20){
 
                 if (keyIsDown(78)) {
                     Matter.Body.applyForce(this.body, this.body.position, {x: 0, y: this.jump});
@@ -141,7 +141,7 @@ class Player{
             }
         }
         this.recover = function(){
-            if (this.stamina <= 0 && !this.recovering) {
+            if (this.stamina <= 50 && !this.recovering) {
                 this.recovering = true;
                 const recoverAmount = 100; // assuming max stamina is 100
                 const duration = 4000; // 5 seconds
