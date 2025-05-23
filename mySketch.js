@@ -37,6 +37,8 @@ let chunkNum = 1
 
 let hasWon = false
 
+let sliders = []
+
 function setup() {
 	// Set the canvas size
 	WIDTH = windowWidth - 50;
@@ -44,6 +46,7 @@ function setup() {
 	createCanvas(WIDTH, HEIGHT);
 	engine = Engine.create();
 	world = engine.world;
+	textAlign(CENTER, CENTER)
 }
 
 function chunkSquence(numChunks){
@@ -85,7 +88,7 @@ function draw() {
 				chunk.generate();*/
 
 				for (let i = 0; i < numPlayers; i++) {
-					let player = new Player(200 + i * 60, 200, 20, 20, 5, null, i, -0.003);
+					let player = new Player(200 + i * 60, 200, 20, 20, 0, 5, null, i, -0.01, 100);
 					players.push(player);
 
 					if (i > 0) {
@@ -101,19 +104,28 @@ function draw() {
 						constraints.push(constraint);
 						World.add(world, constraint);
 					}
+					sliders.push(new JumpTimer(200 * i, 50, 100, 20, 100))
 				}
 			}
 			Engine.update(engine);
-
+			
+			for (let i = 0; i < players.length; i++) {
+				sliders[i].value = players[i].stamina;
+				sliders[i].show();
+				print(`stamina: ${players[i].stamina}`);
+				print(`slider: ${sliders[i].value}`);
+			}
+			print(`slider important: ${sliders[1].value}`);
+			
 			//Show
 			let offsetX = width / 2 - players[0].body.position.x -300;
-  			let offsetY = (height / 2 - players[0].body.position.y)/2;
+			let offsetY = (height / 2 - players[0].body.position.y)/2;
 			push();
 			translate(offsetX, offsetY);
 			piece.show();
 			//ground.show();
 			for (let chunk of mapGen.chunks) {
-								fill(255, 0, 0);
+				fill(255, 0, 0);
 				rect(chunk.endX[0], chunk.endY[0], chunk.endX[1] - chunk.endX[0], chunk.endY[1] - chunk.endY[0]);
 				fill(0, 255, 0);
 				for (let body of chunk.bodies) {
@@ -136,9 +148,18 @@ function draw() {
 			pop();
 			//show ending
 
+			for(let i = 0; i < mapGen.chunks.length; i++){
+				let chunk = mapGen.chunks[i];
+				if(piece.body.position.x >= chunk.endX[0] && piece.body.position.x <= chunk.endX[1]&& piece.body.position.y >= chunk.endY[0] && piece.body.position.y <= chunk.endY[1]){
+					actualState = gameState.WINNING;
+				}
+			}
 
 			for (let i = 0; i < players.length; i++) {
+				print(`id: ${players[i].id}`)
 				players[i].handleControls();
+				players[i].recover()
+				print(mapGen.chunks)
 				if (dist(players[i].body.position.x, players[i].body.position.y, piece.body.position.x, piece.body.position.y) < 50 && keyIsDown(32)) {
 					piece.addConstraint(players[players.length - 1].body);
 					piece.hasRope = true;
@@ -177,32 +198,50 @@ function draw() {
 					piece.hasRope = false;
 				}
 			}
-			for(let i = 0; i < mapGen.chunks.length; i++){
-				let chunk = mapGen.chunks[i];
-
-				if(piece.body.position.x >= chunk.endX[0] && piece.body.position.x <= chunk.endX[1]&& piece.body.position.y >= chunk.endY[0] && piece.body.position.y <= chunk.endY[1]){
-					hasWon = true;
-					actualState = gameState.WINNING;
-				}
-			}
 			break
 
 		case gameState.WINNING:
 			text('you won', WIDTH / 2 - 100, HEIGHT / 2);
-			if (keyIsDown(ENTER)) {
-				actualState = gameState.ON_GAME;
-			}
+			go_main = new Button('GO BACK', 100, 100, 200, 100)
+			go_main.draw()
+			if (go_main.isPressed() && mouseIsPressed) {
+				actualState = gameState.MAIN_MENU;
+				players = []
+				piece = []
+				piece = new Piece(200, 200, 10, 5);
+				for (let i = 0; i < numPlayers; i++) {
+					let player = new Player(200 + i * 60, 200, 20, 20, 0, 5, null, i, -0.003, 100);
+					players.push(player);
+
+					if (i > 0) {
+						player.body_ant = players[i - 1].body;
+						let constraint = Constraint.create({
+						bodyA: players[i - 1].body,
+						bodyB: players[i].body,
+						length: 60,         
+						stiffness: 0.002,   
+						damping: 0.001      
+						});
+
+						constraints.push(constraint);
+						World.add(world, constraint);
+					}
+				}
+			}	
+			break
+			
 	}
 
 	
 
-}
+}/*
 function keyPressed() {
 	if (keyCode === 83) {
 		Matter.Body.applyForce(players[0].body, players[0].body.position, {
 			x: 0,
 			y: -0.05,
 		});
+		players[0].removeStamina()
 	}
 	switch (keyCode) {
 		//qwe
@@ -297,3 +336,4 @@ function keyPressed() {
 
 	}
 }
+	*/

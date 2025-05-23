@@ -1,5 +1,5 @@
 class Player{
-    constructor(x, y, w, h, angle, points, body_ant, id, jump){
+    constructor(x, y, w, h, angle, points, body_ant, id, jump, stamina){
         this.angle = angle;
         this.points = points;
         var options = {
@@ -10,7 +10,8 @@ class Player{
             density: 0.005,
             mass: 1.5,
         }
-        this.jump = jump;
+        this.stamina = stamina;
+				this.jump = jump
 
         this.w = w;
         this.h = h;
@@ -18,6 +19,7 @@ class Player{
         this.body = Bodies.rectangle(x, y, this.w, this.h,options);
         this.body_ant = body_ant
         this.color = color(random(255), random(255), random(255));
+				this.staminaRemove = 20
 
         World.add(world, this.body);
         this.show = function() {
@@ -63,8 +65,13 @@ class Player{
 
         }
         this.handleControlsPlayer1 = function() {
-            if (keyIsDown(87)) {
-                Matter.Body.applyForce(this.body, this.body.position, {x: 0, y: this.jump});
+            if(this.stamina >= 0){
+                if (keyIsDown(87)) {
+                    Matter.Body.applyForce(this.body, this.body.position, {x: 0, y: this.jump});
+                    this.removeStamina()
+                }else{
+                    this.staminaRemoved = false
+                }
             }
             if (keyIsDown(81)) {
                 Matter.Body.applyForce(this.body, this.body.position, {x: -0.05, y: 0});
@@ -76,6 +83,9 @@ class Player{
         this.handleControlsPlayer2 = function() {
             if (keyIsDown(88)) {
                 Matter.Body.applyForce(this.body, this.body.position, {x: 0, y: this.jump});
+                 this.removeStamina()
+            }else{
+                this.staminaRemoved = false
             }
             if (keyIsDown(90)) {
                 Matter.Body.applyForce(this.body, this.body.position, {x: -0.05, y: 0});
@@ -87,6 +97,9 @@ class Player{
         this.handleControlsPlayer3 = function() {
             if (keyIsDown(79)) {
                 Matter.Body.applyForce(this.body, this.body.position, {x: 0, y: this.jump});
+                this.removeStamina()
+            }else{
+                this.staminaRemoved = false
             }
             if (keyIsDown(73)) {
                 Matter.Body.applyForce(this.body, this.body.position, {x: -0.05, y: 0});
@@ -98,12 +111,38 @@ class Player{
         this.handleControlsPlayer4 = function() {
             if (keyIsDown(78)) {
                 Matter.Body.applyForce(this.body, this.body.position, {x: 0, y: this.jump});
+                this.removeStamina()
+            }else{
+                this.staminaRemoved = false
             }
             if (keyIsDown(66)) {
                 Matter.Body.applyForce(this.body, this.body.position, {x: -0.05, y: 0});
             }
             if (keyIsDown(77)) {
                 Matter.Body.applyForce(this.body, this.body.position, {x: 0.05, y: 0});
+            }
+        }
+        this.removeStamina = function(){
+            if (!this.staminaRemoved) {
+                this.stamina -= this.staminaRemove;
+                this.staminaRemoved = true;
+            }
+        }
+        this.recover = function(){
+            if (this.stamina <= 0 && !this.recovering) {
+                this.recovering = true;
+                const recoverAmount = 100; // assuming max stamina is 100
+                const duration = 4000; // 5 seconds
+                const interval = 50;
+                const increment = recoverAmount / (duration / interval);
+                const recoverInterval = setInterval(() => {
+                    this.stamina += increment;
+                    if (this.stamina >= recoverAmount) {
+                        this.stamina = recoverAmount;
+                        clearInterval(recoverInterval);
+                        this.recovering = false;
+                    }
+                }, interval);
             }
         }
     }
