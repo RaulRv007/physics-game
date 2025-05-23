@@ -1,5 +1,5 @@
 class Player{
-    constructor(x, y, w, h, angle, points, body_ant, id, jump, stamina){
+    constructor(x, y, w, h, angle, points, body_ant, id, jump, stamina, force, sprite){
         this.angle = angle;
         this.points = points;
         var options = {
@@ -11,7 +11,9 @@ class Player{
             mass: 1.5,
         }
         this.stamina = stamina;
-				this.jump = jump
+        this.jump = jump
+        this.force = force
+        this.image = sprite
 
         this.w = w;
         this.h = h;
@@ -30,7 +32,8 @@ class Player{
             rotate(angle);
             rectMode(CENTER);
             fill(this.color);
-            rect(0, 0, this.w, this.h);
+            //rect(0, 0, this.w, this.h);
+            image(this.image, -this.w/2, -this.h/2, this.w, this.h);
             pop();
             if (this.body_ant) {
                 let pos_ant = this.body_ant.position;
@@ -74,52 +77,61 @@ class Player{
                 }
             }
             if (keyIsDown(81)) {
-                Matter.Body.applyForce(this.body, this.body.position, {x: -0.05, y: 0});
+                Matter.Body.applyForce(this.body, this.body.position, {x: -this.force, y: 0});
             }
             if (keyIsDown(69)) {
-                Matter.Body.applyForce(this.body, this.body.position, {x: 0.05, y: 0});
+                Matter.Body.applyForce(this.body, this.body.position, {x: this.force, y: 0});
             }
         }
         this.handleControlsPlayer2 = function() {
-            if (keyIsDown(88)) {
-                Matter.Body.applyForce(this.body, this.body.position, {x: 0, y: this.jump});
-                 this.removeStamina()
-            }else{
-                this.staminaRemoved = false
+            if(this.stamina >= 0){
+
+                if (keyIsDown(88)) {
+                    Matter.Body.applyForce(this.body, this.body.position, {x: 0, y: this.jump});
+                     this.removeStamina()
+                }else{
+                    this.staminaRemoved = false
+                }
             }
             if (keyIsDown(90)) {
-                Matter.Body.applyForce(this.body, this.body.position, {x: -0.05, y: 0});
+                Matter.Body.applyForce(this.body, this.body.position, {x: -this.force, y: 0});
             }
             if (keyIsDown(67)) {
-                Matter.Body.applyForce(this.body, this.body.position, {x: 0.05, y: 0});
+                Matter.Body.applyForce(this.body, this.body.position, {x: this.force, y: 0});
             }
         }
         this.handleControlsPlayer3 = function() {
-            if (keyIsDown(79)) {
-                Matter.Body.applyForce(this.body, this.body.position, {x: 0, y: this.jump});
-                this.removeStamina()
-            }else{
-                this.staminaRemoved = false
+            if(this.stamina >= 0){
+
+                if (keyIsDown(79)) {
+                    Matter.Body.applyForce(this.body, this.body.position, {x: 0, y: this.jump});
+                     this.removeStamina()
+                }else{
+                    this.staminaRemoved = false
+                }
             }
             if (keyIsDown(73)) {
-                Matter.Body.applyForce(this.body, this.body.position, {x: -0.05, y: 0});
+                Matter.Body.applyForce(this.body, this.body.position, {x: -this.force, y: 0});
             }
             if (keyIsDown(80)) {
-                Matter.Body.applyForce(this.body, this.body.position, {x: 0.05, y: 0});
+                Matter.Body.applyForce(this.body, this.body.position, {x: this.force, y: 0});
             }
         }
         this.handleControlsPlayer4 = function() {
-            if (keyIsDown(78)) {
-                Matter.Body.applyForce(this.body, this.body.position, {x: 0, y: this.jump});
-                this.removeStamina()
-            }else{
-                this.staminaRemoved = false
+            if(this.stamina >= 0){
+
+                if (keyIsDown(78)) {
+                    Matter.Body.applyForce(this.body, this.body.position, {x: 0, y: this.jump});
+                     this.removeStamina()
+                }else{
+                    this.staminaRemoved = false
+                }
             }
             if (keyIsDown(66)) {
-                Matter.Body.applyForce(this.body, this.body.position, {x: -0.05, y: 0});
+                Matter.Body.applyForce(this.body, this.body.position, {x: -this.force, y: 0});
             }
             if (keyIsDown(77)) {
-                Matter.Body.applyForce(this.body, this.body.position, {x: 0.05, y: 0});
+                Matter.Body.applyForce(this.body, this.body.position, {x: this.force, y: 0});
             }
         }
         this.removeStamina = function(){

@@ -1,5 +1,5 @@
 class Piece{
-    constructor(x, y, r, value) {
+    constructor(x, y, r, value, sprite) {
         this.options = {
             restitution: 0.5,
             friction: 0,
@@ -11,6 +11,7 @@ class Piece{
         World.add(world, this.body);
         this.r = r;
         this.hasRope = false;
+        this.sprite = sprite
 
         this.show = function() {
             let pos = this.body.position;
@@ -21,6 +22,7 @@ class Piece{
             rectMode(CENTER);
             fill(255);
             circle(0, 0, this.r * 2);
+            image(this.sprite, -this.r * 2, -this.r * 2, this.r * 4, this.r * 4);
             pop();
             if (this.hasRope) {
                 let pos_ant = players[players.length - 1].body.position;
