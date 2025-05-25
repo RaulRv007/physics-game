@@ -1,28 +1,28 @@
-# Physics-Based Multiplayer Platformer
+# Physics-Based Multiplayer Platformer 🎮✨
 
 ## Overview
 
 This repository contains a physics-driven, multiplayer platformer game built with **p5.js** and **Matter.js**, targeting the Grade 11/12 ICS2/3x Programming curriculum. Key features include:
 
-* **Procedural Level Generation**: Chunks of varying types (flat, stairs, pits, swings, climbable sections) are generated in sequence.
-* **Tethered Multiplayer**: Up to 4 players are connected by ropes, introducing cooperative mechanics.
-* **Digital Countdown Timer**: A 2-minute timer governs each play session.
-* **Accessibility Keyboard**: A custom BLE keyboard built on an ESP32 with 5 pushbuttons for alternative controls. This keyboard allows people with reduce mobility in their hands to play the game easily.
-* **Custom PCB**: Designed in KiCad to host the ESP32 and buttons.
+* **Procedural Level Generation** 🏗️: Chunks of varying types (flat, stairs, pits, swings, climbable sections) are generated in sequence.
+* **Tethered Multiplayer** 🤝: Up to 4 players are connected by ropes, introducing cooperative mechanics.
+* **Digital Countdown Timer** ⏲️: A 2-minute timer governs each play session.
+* **Accessibility Keyboard** ♿⌨️: A custom BLE keyboard built on an ESP32 with 5 pushbuttons for alternative controls. This keyboard allows people with reduced mobility in their hands to play the game easily.
+* **Custom PCB** 🛠️: Designed in KiCad to host the ESP32 and buttons.
 
 ---
 
 ## Table of Contents
 
-1. [Design & Planning](#design--planning)
-2. [Installation and Setup](#installation-and-setup)
-3. [Game Controls](#game-controls)
-4. [Code Structure](#code-structure)
-5. [Pseudocode](#pseudocode)
-6. [Hardware Accessibility](#hardware-accessibility)
-7. [KiCad PCB Design](#kicad-pcb-design)
-8. [Future Improvements](#future-improvements)
-9. [References](#references)
+1. [Design & Planning](#design--planning) 📝
+2. [Installation and Setup](#installation-and-setup) 💻
+3. [Game Controls](#game-controls) 🎮
+4. [Code Structure](#code-structure) 🗂️
+5. [Pseudocode](#pseudocode) 🧩
+6. [Hardware Accessibility](#hardware-accessibility) ♿
+7. [KiCad PCB Design](#kicad-pcb-design) 🛠️
+8. [Future Improvements](#future-improvements) 🚀
+9. [References](#references) 📚
 
 ---
 
@@ -30,44 +30,44 @@ This repository contains a physics-driven, multiplayer platformer game built wit
 
 Before writing code, the following steps were completed:
 
-1. **Sketches**: Hand-drawn layouts showing:
+1. **Sketches** ✏️: Hand-drawn layouts showing:
 
-   * Main menu with player-selection buttons
-   * In-game HUD (timer, stamina bars)
-   * Chunk types and transition logic
-   * Graphics theme
-   * Sprites style
+    * Main menu with player-selection buttons
+    * In-game HUD (timer, stamina bars)
+    * Chunk types and transition logic
+    * Graphics theme
+    * Sprites style
 
 2. **Specifications**:
 
-   * **Audience**: Teens and beginner programmers.
-   * **Unique Selling Point**: Cooperative, rope-tethered movement with procedurally generated chunks.
-   * **Start/End**: Game starts at main menu; ends when timer runs out or players reach the end-zone.
-   * **Scoring**: How fast the team gets the stolen piece into the endzone
-   * **Challenge**: Random chunk sequences that adapt difficulty.
+    * **Audience**: Teens and beginner programmers.
+    * **Unique Selling Point**: Cooperative, rope-tethered movement with procedurally generated chunks.
+    * **Start/End**: Game starts at main menu; ends when timer runs out or players reach the end-zone.
+    * **Scoring**: How fast the team gets the stolen piece into the endzone 🏁
+    * **Challenge**: Random chunk sequences that adapt difficulty.
 3. **Pseudocode**: High-level representations of core algorithms (see section below).
 
 ---
 
-## Installation and Setup
+## Installation and Setup 💻
 
 1. Clone the repo:
 
-   ```bash
-   git clone https://github.com/username/physics-platformer.git
-   cd physics-platformer
-   ```
+    ```bash
+    git clone https://github.com/username/physics-platformer.git
+    cd physics-platformer
+    ```
 2. Serve with a local HTTP server (required for `p5.js` assets):
 
-   ```bash
-   npx http-server .
-   ```
+    ```bash
+    npx http-server .
+    ```
 3. Open `http://localhost:8080` in your browser.
 4. Make sure the `assets/` folder is alongside `index.html`.
 
 ---
 
-## Game Controls
+## Game Controls 🎮
 
 * **Keyboard (default)**:
 
@@ -79,7 +79,7 @@ Before writing code, the following steps were completed:
 
 ---
 
-## Code Structure
+## Code Structure 🗂️
 
 ```
 /src
@@ -103,22 +103,22 @@ Before writing code, the following steps were completed:
 
 ---
 
-## Pseudocode
+## Pseudocode 🧩
 
 ### Chunk Sequence Generation
 
 ```pseudo
 function chunkSequence(numChunks):
-    sequence = ['flat']
-    for i in 1..numChunks:
-        last = sequence.last()
-        if last in ['flat', 'stairs-up', 'pit-platforms']:
-            nextType = random(['climb','stairs-down','pit-platforms','swing'])
-        else:
-            nextType = random(['climb','stairs-up','pit-platforms','swing'])
-        sequence.append(nextType)
-    sequence.append('end')
-    return sequence
+     sequence = ['flat']
+     for i in 1..numChunks:
+          last = sequence.last()
+          if last in ['flat', 'stairs-up', 'pit-platforms']:
+                nextType = random(['climb','stairs-down','pit-platforms','swing'])
+          else:
+                nextType = random(['climb','stairs-up','pit-platforms','swing'])
+          sequence.append(nextType)
+     sequence.append('end')
+     return sequence
 ```
 
 ### MapGenerator.generate()
@@ -126,11 +126,11 @@ function chunkSequence(numChunks):
 ```pseudo
 currentX = startX
 for each type in chunkSequence:
-    hasStairs = (peekNext == 'stairs-down')
-    chunk = new Chunk(type, currentX, startY, chunkWidth, hasStairs)
-    chunk.addToWorld(world)
-    chunks.push(chunk)
-    currentX += chunkWidth
+     hasStairs = (peekNext == 'stairs-down')
+     chunk = new Chunk(type, currentX, startY, chunkWidth, hasStairs)
+     chunk.addToWorld(world)
+     chunks.push(chunk)
+     currentX += chunkWidth
 # add final end chunk
 ```
 
@@ -139,11 +139,11 @@ for each type in chunkSequence:
 ```pseudo
 controls = {id: {up,key, left,key, right,key}, ...}
 for each player:
-    if keyIsDown(controls[id].up) and stamina>=min:
-        applyForce(0, jumpForce)
-        reduceStamina()
-    if keyIsDown(left): applyForce(-force,0)
-    if keyIsDown(right): applyForce(force,0)
+     if keyIsDown(controls[id].up) and stamina>=min:
+          applyForce(0, jumpForce)
+          reduceStamina()
+     if keyIsDown(left): applyForce(-force,0)
+     if keyIsDown(right): applyForce(force,0)
 ```
 
 ### DigitalTimer
@@ -158,7 +158,7 @@ if remaining==0: finished = true; onFinishCallback()
 
 ---
 
-## Hardware Accessibility
+## Hardware Accessibility ♿
 
 To support players with limited mobility, a custom BLE keyboard was designed:
 
@@ -175,7 +175,7 @@ The decision for this setup is that in total it would be really cheap to produce
 
 ---
 
-## KiCad PCB Design
+## KiCad PCB Design 🛠️
 
 A custom PCB hosts the ESP32 module and buttons:
 
@@ -189,7 +189,7 @@ A custom PCB hosts the ESP32 module and buttons:
 
 ---
 
-## Future Improvements
+## Future Improvements 🚀
 
 * Custom chunk creation with a system similar to mario maker
 * More chunks to increase game dynamic
@@ -198,7 +198,7 @@ A custom PCB hosts the ESP32 module and buttons:
 
 ---
 
-## References
+## References 📚
 
 * Matter.js Documentation: [https://brm.io/matter-js/](https://brm.io/matter-js/)
 * p5.js Reference: [https://p5js.org/reference/](https://p5js.org/reference/)
@@ -207,4 +207,4 @@ A custom PCB hosts the ESP32 module and buttons:
 
 ---
 
-*Good luck and have fun playing!*
+*Good luck and have fun playing! 🎉*
