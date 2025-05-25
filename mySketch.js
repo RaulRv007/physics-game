@@ -169,7 +169,10 @@ function draw() {
 			}
 			for (let chunk of mapGen.chunks) {
 				fill(255, 0, 0);
-				rect(chunk.endX[0], chunk.endY[0], chunk.endX[1] - chunk.endX[0], chunk.endY[1] - chunk.endY[0]);
+				//rect(chunk.endX[0], chunk.endY[0], chunk.endX[1] - chunk.endX[0], chunk.endY[1] - chunk.endY[0]);
+				if(chunk.type == 'end'){
+					image(endzone, chunk.endX[0], chunk.endY[0] - 400, chunk.chunkWidth/2, chunk.chunkWidth/2);
+				}
 				fill(0, 255, 0);
 				
 				for (let body of chunk.bodies) {

@@ -1,26 +1,64 @@
 #include <BleKeyboard.h>
 
 BleKeyboard bleKeyboard;
-const int buttonPin = 26;  
-bool wasPressed = false;
+
+// Pin assignments
+const int pinJump = 5;     // GPIO for jump (e.g., W)
+const int pinLeft = 16;    // GPIO for left (e.g., Q)
+const int pinRight = 27;   // GPIO for right (e.g., E)
+
+// Debounce state
+bool jumpPressed = false;
+bool leftPressed = false;
+bool rightPressed = false;
 
 void setup() {
   Serial.begin(115200);
-  pinMode(buttonPin, INPUT_PULLUP); 
-  pinMode(27, INPUT_PULLUP); 
+
+  // Set button pins
+  pinMode(pinJump, INPUT_PULLUP);
+  pinMode(pinLeft, INPUT_PULLUP);
+  pinMode(pinRight, INPUT_PULLUP);
+
+  // Start BLE keyboard
   bleKeyboard.begin();
 }
 
 void loop() {
   if (bleKeyboard.isConnected()) {
-    if (digitalRead(27) == LOW) {
-      if (!wasPressed) {
-        bleKeyboard.write('w'); 
-        wasPressed = true;
+    // Jump (W key)
+    if (digitalRead(pinJump) == LOW) {
+      if (!jumpPressed) {
+        bleKeyboard.write('w');
+        jumpPressed = true;
+        Serial.println("Jump pressed");
       }
     } else {
-      wasPressed = false;
+      jumpPressed = false;
+    }
+
+    // Left (Q key)
+    if (digitalRead(pinLeft) == LOW) {
+      if (!leftPressed) {
+        bleKeyboard.write('q');
+        leftPressed = true;
+        Serial.println("Left pressed");
+      }
+    } else {
+      leftPressed = false;
+    }
+
+    // Right (E key)
+    if (digitalRead(pinRight) == LOW) {
+      if (!rightPressed) {
+        bleKeyboard.write('e');
+        rightPressed = true;
+        Serial.println("Right pressed");
+      }
+    } else {
+      rightPressed = false;
     }
   }
-  delay(10);
+
+  delay(10); // Basic debounce
 }
