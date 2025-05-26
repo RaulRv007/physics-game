@@ -77,9 +77,9 @@ function chunkSquence(numChunks){
 			chunkChain.push(random(['flat', 'stairs-up', 'pit-platforms', 'swing']))
 		}
 		if(chunkChain[chunkChain.length - 1] == 'flat' || chunkChain[chunkChain.length - 1] == 'stairs-up' || chunkChain[chunkChain.length - 1] == 'pit-platfoms' ){
-			chunkChain.push(random(['climb', 'stairs-down', 'pit-platforms', 'swing']))
+			chunkChain.push(random(['climb', 'stairs-down', 'pit-platforms', /*'swing'*/]))
 		}
-		chunkChain.push(random(['climb', 'stairs-up', 'pit-platforms', 'swing']))
+		chunkChain.push(random(['climb', 'stairs-up', 'pit-platforms', /*'swing'*/]))
 
 	}
 	chunkChain.push('end')
