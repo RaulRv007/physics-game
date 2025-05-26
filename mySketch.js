@@ -26,6 +26,7 @@ let gameState = {
 	ON_GAME: 1,
 	WINNING: 2,
 	PAUSE: 3,
+	INSTRUCTIONS: 4
 
 
 }
@@ -133,13 +134,46 @@ function draw() {
 				button.draw();
 				if (button.isPressed() && mouseIsPressed) {
 					numPlayers = parseInt(btn.label.split(' ')[0]);
-					actualState = gameState.ON_GAME;
+					actualState = gameState.INSTRUCTIONS;
 				}
 			});
 			
+			instructions = new Button('INSTRUCTIONS', WIDTH / 2 - 100, HEIGHT / 2 -100, 300, 100, platfoms[0])
+			instructions.draw()
+			if (instructions.isPressed() && mouseIsPressed) {
+				actualState = gameState.INSTRUCTIONS;
+			}
+
 			text('Select the number of players to start', WIDTH / 2, HEIGHT / 2 - 200);
 			
 			break;
+			case gameState.INSTRUCTIONS:
+				city.resize(WIDTH, HEIGHT);
+				image(city, 0, 0);
+				text(`HIGH SCORE: ${parseFloat(localStorage.getItem('winnerTime')).toFixed(2)} seconds`, WIDTH / 2 - 100, HEIGHT / 2 - 75);
+
+				text('carry the coin to the endzone', WIDTH / 2 - 100, HEIGHT / 2);
+				text('collaboration is your greatest tool', WIDTH / 2 - 100, HEIGHT / 2 + 50);
+				text('use q, w, e to control player 1', WIDTH / 2 - 100, HEIGHT / 2 - 150);
+				text('use x, z, c to control player 2', WIDTH / 2 - 100, HEIGHT / 2 - 225);
+				text('use o, i, p to control player 3', WIDTH / 2 - 100, HEIGHT / 2 - 300);
+				text('use n, b, m to control player 4', WIDTH / 2 - 100, HEIGHT / 2 - 375);
+
+				go_main = new Button('GO BACK TO MENU', WIDTH/2 - 550, HEIGHT/2 +100, 300, 100, platfoms[0]);
+				go_main.draw();
+
+				if (go_main.isPressed() && mouseIsPressed) {
+					// Clean up without reload
+					World.clear(world, false);
+					Engine.clear(engine);
+					mapGen = null;
+					actualState = gameState.MAIN_MENU;
+					players = [];
+					piece = [];
+					winTimeSaved = false; // Reset for next game
+					return false; // Prevent default behavior
+				}
+				break;
 		case gameState.ON_GAME:
 			//my start
 			if (!mapGen) {
