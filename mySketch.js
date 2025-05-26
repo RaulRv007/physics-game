@@ -27,11 +27,12 @@ let gameState = {
 	WINNING: 2,
 	PAUSE: 3,
 
+
 }
-let actualState = gameState.MAIN_MENU;
+let actualState = gameState.MAIN_MENU
 
 let piece
-let mapGen;
+let mapGen
 
 let chunkNum = 1
 
@@ -49,6 +50,13 @@ let font
 
 let timer
 
+let jump_sound
+let background_music
+let winning
+
+let startTime = 0
+let winTimeSaved = false
+
 function setup() {
 	// Set the canvas size
 	WIDTH = windowWidth - 50;
@@ -65,7 +73,10 @@ function setup() {
 function chunkSquence(numChunks){
 	let chunkChain = ['flat']
 	for(let i = 0; i<= chunkNum; i++){
-		if(chunkChain[chunkChain.length - 1] == 'flat' || chunkChain[chunkChain.length - 1] == 'stairs-up', chunkChain[chunkChain.length - 1] == 'pit-`platfoms' ){
+		if(i == 0){
+			chunkChain.push(random(['flat', 'stairs-up', 'pit-platforms', 'swing']))
+		}
+		if(chunkChain[chunkChain.length - 1] == 'flat' || chunkChain[chunkChain.length - 1] == 'stairs-up' || chunkChain[chunkChain.length - 1] == 'pit-platfoms' ){
 			chunkChain.push(random(['climb', 'stairs-down', 'pit-platforms', 'swing']))
 		}
 		chunkChain.push(random(['climb', 'stairs-up', 'pit-platforms', 'swing']))
@@ -89,12 +100,21 @@ function preload(){
 	coin = loadImage('assets/coin.png')
 	font = loadFont('assets/neon.ttf')
 	endzone = loadImage('assets/endzone.png')
+	jump_sound = loadSound('assets/sound/jump.wav')
+	background_music = loadSound('assets/sound/bg_music.mp3')
+
 }
 
 function draw() {
 
 	print(actualState)
 	background('#262a31');
+
+	if (!background_music.isPlaying()) {
+		//background_music.loop();
+		background_music.setVolume(0.1);
+	}
+
 	switch (actualState) {
 		case gameState.MAIN_MENU:
 
@@ -123,18 +143,15 @@ function draw() {
 		case gameState.ON_GAME:
 			//my start
 			if (!mapGen) {
+				startTime = millis();
 
 				mapGen = new MapGenerator(world, chunkSquence(chunkNum), 0, HEIGHT - 100, 1000);
 				mapGen.generate();
-				//ground = new Ground(WIDTH / 2, HEIGHT + 150 , WIDTH*200, 300, 0);
 
 				piece = new Piece(200, 200, 10, 5, coin);
-				/*
-				chunk = new Chunk(WIDTH/2, HEIGHT, '');
-				chunk.generate();*/
 
 				for (let i = 0; i < numPlayers; i++) {
-					let player = new Player(200 + i * 60, 200, 30, 40, 0, 5, null, i, -0.01, 100, 0.01, player_graphics[i]);
+					let player = new Player(200 + i * 60, 200, 30, 40, 0, 5, null, i, -0.04, 100, 0.05, player_graphics[i]);
 					players.push(player);
 
 					if (i > 0) {
@@ -267,37 +284,89 @@ function draw() {
 			}
 			break
 
-		case gameState.WINNING:
+			case gameState.WINNING:
+				city.resize(WIDTH, HEIGHT);
+				image(city, 0, 0);
+				text('you won', WIDTH / 2 - 100, HEIGHT / 2);
+				text(`HIGH SCORE: ${parseFloat(localStorage.getItem('winnerTime')).toFixed(2)} seconds`, WIDTH / 2 - 100, HEIGHT / 2 - 75);
+
+				// Save win time once
+				if (!winTimeSaved) {
+					let endTime = millis();
+					let totalTime = (endTime - startTime) / 1000;
+					// Use preventDefault() to stop any potential form submission
+					winTimeSaved = true; // Set this first to prevent multiple calls
+					sendWinTimeToServer(totalTime);
+				}
+
+				go_main = new Button('GO BACK TO MENU', WIDTH/2 - 550, HEIGHT/2 +100, 300, 100, platfoms[0]);
+				go_main.draw();
+
+				if (go_main.isPressed() && mouseIsPressed) {
+					// Clean up without reload
+					World.clear(world, false);
+					Engine.clear(engine);
+					mapGen = null;
+					actualState = gameState.MAIN_MENU;
+					players = [];
+					piece = [];
+					winTimeSaved = false; // Reset for next game
+					return false; // Prevent default behavior
+				}
+				break;
+
+
+		case gameState.PAUSE:
 			city.resize(WIDTH, HEIGHT);
 			image(city, 0, 0);
-			text('you won', WIDTH / 2 - 100, HEIGHT / 2);
-			go_main = new Button('GO BACK', 100, 100, 200, 100, platfoms[0]);
+			text('PAUSE', WIDTH / 2 - 100, HEIGHT / 2);
+			
+			text('carry the coin to the endzone', WIDTH / 2 - 100, HEIGHT / 2 - 75);
+			text('collaboration is your greatest tool', WIDTH / 2 - 100, HEIGHT / 2 - 150);
+			text('press ctrl to continue the game', WIDTH / 2 - 100, HEIGHT / 2 - 225);
+			go_main = new Button('GO BACK TO MENU', WIDTH/2 - 550, HEIGHT/2 +100, 300, 100, platfoms[0]);
 			go_main.draw()
 			if (go_main.isPressed() && mouseIsPressed) {
+				mapGen = null;
 				actualState = gameState.MAIN_MENU;
 				players = []
 				piece = []
-				piece = new Piece(200, 200, 10, 5, coin);
-				for (let i = 0; i < numPlayers; i++) {
-					let player = new Player(200 + i * 60, 200, 40, 40, 0, 5, null, i, -0.01, 100, 0.01, player_graphics[i]);
-					players.push(player);
-
-					if (i > 0) {
-						player.body_ant = players[i - 1].body;
-						let constraint = Constraint.create({
-						bodyA: players[i - 1].body,
-						bodyB: players[i].body,
-						length: 60,         
-						stiffness: 0.002,   
-						damping: 0.001      
-						});
-
-						constraints.push(constraint);
-						World.add(world, constraint);
-					}
+				const allBodies = Composite.allBodies(engine.world);
+				for (const body of allBodies) {
+					World.remove(engine.world, body);
 				}
+
+
 			}	
 			break
 			
+	}
+}
+
+function keyPressed() {
+	if (keyCode === 17) {
+		if(actualState == gameState.ON_GAME){
+			actualState = gameState.PAUSE;	
+		}else if(actualState == gameState.PAUSE){
+			actualState = gameState.ON_GAME;
+		}
+	}
+}
+
+function playerWins() {
+  if (!gameWon) {
+    let endTime = millis();
+    let totalTime = (endTime - startTime) / 1000; // in seconds
+    saveTimeToFile(totalTime);
+    gameWon = true;
+  }
+}
+function saveTimeToFile(timeInSeconds) {
+  let content = `Player won in ${timeInSeconds.toFixed(2)} seconds.`;
+  saveStrings([content], 'winner_time.txt');
+}
+function sendWinTimeToServer(winnerTime) {
+	if(localStorage.getItem('winnerTime') > winnerTime){
+		localStorage.setItem('winnerTime', winnerTime);
 	}
 }
