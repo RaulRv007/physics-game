@@ -108,7 +108,7 @@ class Player {
             if (this.stamina <= 50 && !this.recovering) {
                 this.recovering = true;
                 const recoverAmount = 100;
-                const duration = 4000;
+                const duration = 8000;
                 const interval = 50;
                 const increment = recoverAmount / (duration / interval);
                 const recoverInterval = setInterval(() => {
