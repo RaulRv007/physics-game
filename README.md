@@ -162,6 +162,9 @@ if remaining==0: finished = true; onFinishCallback()
 
 To support players with limited mobility, a custom BLE keyboard was designed:
 
+* OnShape Assembly: [https://cad.onshape.com/documents/988dd76aecb75962d265d2b5/w/65d7c2b6c940bfe08a743b60/e/20221e8a806b94a1ca8db9d0?renderMode=0&uiState=683498fb14300841d7131ac3](https://cad.onshape.com/documents/988dd76aecb75962d265d2b5/w/65d7c2b6c940bfe08a743b60/e/20221e8a806b94a1ca8db9d0?renderMode=0&uiState=683498fb14300841d7131ac3)
+
+
 ![Accesibility drawing](accesibility/screenshots_accesibility/accesibility-drawing.png)
 
 1. **ESP32** configured as a BLE HID device using `BleKeyboard.h`.

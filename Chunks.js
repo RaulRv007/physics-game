@@ -82,11 +82,11 @@ class Chunk {
                 if(i > steps - 6){
                     stepY = stepY - stepHeight - (stepHeight/2)
                 }else{
-                    stepY = this.y * (random(noise(50))/2) + HEIGHT/2.5 + 200
+                    stepY = this.y * (random(noise(50))/3) + HEIGHT/2.5 + 200
 
                 }
             }else{
-                stepY = this.y * (random(noise(50))/2) + HEIGHT/2.5 + 200
+                stepY = this.y * (random(noise(50))/3) + HEIGHT/2.5 + 200
 
                 if(abs(stepY - stepY_ant) >= 30){
                     this.y * (random(noise(50))/4) + HEIGHT/2.5 + 200

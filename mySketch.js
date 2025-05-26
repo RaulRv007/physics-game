@@ -34,7 +34,7 @@ let actualState = gameState.MAIN_MENU
 let piece
 let mapGen
 
-let chunkNum = 1
+let chunkNum = 3
 
 let hasWon = false
 
